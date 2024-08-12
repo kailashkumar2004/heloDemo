@@ -7,7 +7,9 @@ const {authenticate} = require("../../../middleware/usermiddleware");
 const { createUser, register, login, getUserByToken,
     updateUserByToken, deleteUserByToken,
     resetPassword, updatePassword, allUser,
-    getUserById,updateUserById,deleteUserById} = require("../user.controller/user.controller");
+    getUserById, updateUserById, deleteUserById,
+    serachTokenWithUser, searchWithUser,
+    searchWithFirstName} = require("../user.controller/user.controller");
 
 
 
@@ -25,4 +27,14 @@ route.get("/allUser", wrapAsync(allUser));
 route.get("/getUserById/:id", wrapAsync(getUserById));
 route.put("/updateUserById/:id", wrapAsync(updateUserById));
 route.delete("/deleteUserById/:id", wrapAsync(deleteUserById));
+route.post("/serachTokenWithUser", authenticate, wrapAsync(serachTokenWithUser));
+route.post("/searchWithUser", wrapAsync(searchWithUser));
+route.post("/searchWithFirstName", wrapAsync(searchWithFirstName));
+
+
+
+
+
+
+
 module.exports = route;

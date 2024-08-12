@@ -94,7 +94,7 @@ const login = async (body) => {
 };
 const getUserByToken = async (user) => {
     try {
-        const getUser = await User.findOne({ _id: user });
+        const getUser = await User.findOne({ _id: user }).populate("class");
         console.log("getUser-----------><", getUser);
         if (!getUser) {
             return {
@@ -112,7 +112,7 @@ const getUserByToken = async (user) => {
 };
 const updateUserByToken = async (body, user) => {
     try {
-        const updateUser = await User.findByIdAndUpdate(user, { $set: body }, { new: true });
+        const updateUser = await User.findByIdAndUpdate(user, { $set: body }, { new: true }).populate("class");
         console.log("updateUser--------->>", updateUser);
         if (!updateUser) {
                 throw  "user are not update"  
@@ -128,7 +128,7 @@ const updateUserByToken = async (body, user) => {
 };
 const deleteUserByToken = async (user) => {
     try {
-        const deleteUser = await User.findByIdAndDelete(user);
+        const deleteUser = await User.findByIdAndDelete(user).populate("class");
         console.log("deleteUser---------><", deleteUser);
         if (!deleteUser) {
             throw "user are not deleted"
@@ -199,8 +199,11 @@ const updatePassword = async (body, user) => {
         throw new Error("Failed to update password");
     }
 };
-const allUser = async () => {
-    const alluser = await User.find();
+const allUser = async (query) => {
+    const { page = 1 } = query;
+    const limit = 3;
+    const skip=(page-1)*limit
+    const alluser = await User.find().populate("class").limit(limit).skip(skip).sort({createdAt:-1});
     console.log("alluser---------><", alluser);
     if (!alluser) {
         throw "alluser data are not recived"
@@ -212,7 +215,7 @@ const allUser = async () => {
     };
 };
 const getUserById = async (id) => {
-    const getUser = await User.findById(id);
+    const getUser = await User.findById(id).populate("class");
     console.log("getUser-------><", getUser);
     if (!getUser) {
         throw "user are not geted"
@@ -223,7 +226,7 @@ const getUserById = async (id) => {
     };
 };
 const updateUserById = async (id, body) => {
-    const updateUser = await User.findByIdAndUpdate(id, { $set: body }, { new: true });
+    const updateUser = await User.findByIdAndUpdate(id, { $set: body }, { new: true }).populate("class");
     console.log("updateUser---------><", updateUser);
     if (!updateUser) {
         throw "user are not update"
@@ -234,7 +237,7 @@ const updateUserById = async (id, body) => {
     };
 };
 const deleteUserById = async (id) => {
-    const deleteUser = await User.findByIdAndDelete(id);
+    const deleteUser = await User.findByIdAndDelete(id).populate("class");
     console.log("deleteUser----------><", deleteUser);
     if (!deleteUser) {
         throw "user are not deleted"
@@ -244,9 +247,45 @@ const deleteUserById = async (id) => {
         result: deleteUser
     };
 };
+const serachTokenWithUser = async (body, user) => {
+    const searUser = await User.find(body).populate("class");
+    console.log("searchUser---------<>", searUser);
+    if (!searUser) {
+        throw "user are not find"
+    };
+    return {
+        msg: "okk sucess",
+        count: searUser.length,
+        result: searUser
+    };
+};
+const searchWithUser = async (body) => {
+    const searchUser = await User.find(body).populate("class");
+    console.log("searchUser-------><", searchUser);
+    if (!searchUser) {
+        throw "user are not search"
+    };
+    return {
+        msg: "okk sucess",
+        count: searchUser.length,
+        result: searchUser
+    };
+};
+const searchWithFirstName = async (body) => {
+    const searchName = await User.findOne({ firstName: body.firstName }).populate("class");
+    console.log("searchName-------><", searchName);
+    if (!searchName) {
+        throw "name is not find"
+    };
+    return {
+        msg: "okk sucess",
+        result: searchName
+    };
+};
 module.exports = {
     createUser, register, login, getUserByToken,
     updateUserByToken, deleteUserByToken, resetPassword,
     updatePassword, allUser, getUserById, updateUserById,
-    deleteUserById
+    deleteUserById, serachTokenWithUser, searchWithUser,
+    searchWithFirstName
 }
